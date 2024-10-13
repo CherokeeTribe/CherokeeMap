@@ -35,7 +35,7 @@ const icons = {
     })
 };
 
-// Load all pins from the server
+// Load all pins from the server (MongoDB)
 function loadPinsFromServer() {
     fetch('/pins')
         .then(response => response.json())
@@ -45,7 +45,7 @@ function loadPinsFromServer() {
         .catch(err => console.error('Error loading pins:', err));
 }
 
-// Save a pin to the server
+// Save a pin to the server (MongoDB)
 function savePinToServer(pin) {
     fetch('/pins', {
         method: 'POST',
@@ -74,7 +74,7 @@ function addPin(type, latlng) {
 
     let pin = { id, lat: latlng.lat, lng: latlng.lng, title, description, type };
 
-    // Save pin to server
+    // Save pin to server (MongoDB)
     savePinToServer(pin);
 
     // Add the new marker to the map
@@ -95,12 +95,8 @@ function confirmRemovePin(id) {
     }
 }
 
-// Remove pin from map and server
+// Remove pin from map
 function removePin(id) {
-    let pins = JSON.parse(localStorage.getItem('pins')) || [];
-    pins = pins.filter(pin => pin.id !== id);
-    savePins(pins);
-
     map.eachLayer(layer => {
         if (layer instanceof L.Marker && layer.pinData && layer.pinData.id === id) {
             map.removeLayer(layer);
