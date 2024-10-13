@@ -27,6 +27,10 @@ app.get('/pins', (req, res) => {
         }
 
         const allPins = [];
+        if (files.length === 0) {
+            return res.json(allPins); // Return empty array if no pins
+        }
+
         files.forEach(file => {
             const pinData = fs.readFileSync(path.join(pinsFolder, file));
             allPins.push(JSON.parse(pinData));
