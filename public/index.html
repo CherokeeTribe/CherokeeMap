@@ -32,6 +32,7 @@
             align-items: center;
         }
         .modal-content {
+            position: relative;
             background-color: #fff;
             padding: 20px;
             border-radius: 10px;
@@ -46,6 +47,15 @@
         .modal-content h3 {
             margin-bottom: 20px;
         }
+        /* Close button (X) styling */
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 20px;
+            cursor: pointer;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -55,6 +65,7 @@
 <!-- Modal for pin selection -->
 <div id="pinModal" class="modal">
     <div class="modal-content">
+        <span class="close-btn" id="closeModal">&times;</span> <!-- Close button (X) -->
         <h3>Select a Pin Type</h3>
         <img src="img/nativepin.png" id="normalPin" alt="Normal Pin" title="Normal Pin">
         <img src="img/nativeherbpin.png" id="herbPin" alt="Herb Pin" title="Herb Pin">

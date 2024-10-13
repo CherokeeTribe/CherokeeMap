@@ -106,6 +106,7 @@ function removePin(id) {
 
 // Modal functionality for selecting pin type
 const modal = document.getElementById('pinModal');
+const closeModalBtn = document.getElementById('closeModal');
 let selectedLatLng = null;
 
 // Show modal when user clicks on the map
@@ -128,4 +129,9 @@ document.getElementById('herbPin').addEventListener('click', function() {
 document.getElementById('animalPin').addEventListener('click', function() {
     addPin('animal', selectedLatLng);
     modal.style.display = 'none';  // Hide the modal
+});
+
+// Close modal if user clicks the "X" button
+closeModalBtn.addEventListener('click', function() {
+    modal.style.display = 'none';
 });
