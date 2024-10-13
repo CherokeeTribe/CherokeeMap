@@ -1,11 +1,13 @@
 const express = require('express');
-const { MongoClient } = require('mongodb');
+const { MongoClient, ObjectId } = require('mongodb'); // Import ObjectId
 const multer = require('multer');
 const path = require('path');
 const bodyParser = require('body-parser');
 const fs = require('fs');
 
 const app = express();
+
+// Connection string
 const uri = 'mongodb+srv://cherokeemap-main-db-0df912b1813:kmqxQApC761D19KWq8Ze6Rn1jCcTJR@prod-us-central1-1.lfuy1.mongodb.net/?retryWrites=true&w=majority';
 
 let db;
@@ -19,7 +21,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 MongoClient.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(client => {
         console.log('Connected to MongoDB');
-        db = client.db('cherokeemap-main-db-0df912b1813');
+        db = client.db('cherokeemap-main-db-0df912b1813'); // Ensure the correct database name
     })
     .catch(error => {
         console.error('Error connecting to MongoDB:', error);
@@ -89,7 +91,7 @@ app.post('/pins', upload.single('screenshot'), (req, res) => {
 app.delete('/pins/:id', (req, res) => {
     const pinId = req.params.id;
 
-    db.collection('pins').deleteOne({ _id: new MongoClient.ObjectID(pinId) }, (err, result) => {
+    db.collection('pins').deleteOne({ _id: new ObjectId(pinId) }, (err, result) => {  // Use ObjectId correctly
         if (err) {
             console.error('Error deleting pin:', err);
             return res.status(500).json({ message: 'Error deleting pin' });
