@@ -145,56 +145,5 @@ function removePin(id) {
     .catch(err => console.error('Error deleting pin:', err));
 }
 
-// Function to display full image in a modal
-function showFullscreenImage(imageUrl) {
-    const fullscreenModal = document.getElementById('fullscreenModal');
-    const fullscreenImage = document.getElementById('fullscreenImage');
-    fullscreenImage.src = imageUrl;
-    fullscreenModal.style.display = 'flex';
-}
-
-// Close fullscreen modal when X button or outside the image is clicked
-document.getElementById('closeFullscreenModal').addEventListener('click', function() {
-    document.getElementById('fullscreenModal').style.display = 'none';
-});
-
-document.getElementById('fullscreenModal').addEventListener('click', function(e) {
-    if (e.target === document.getElementById('fullscreenModal')) {
-        document.getElementById('fullscreenModal').style.display = 'none';
-    }
-});
-
-// Modal functionality for selecting pin type
-const modal = document.getElementById('pinModal');
-const closeModalBtn = document.getElementById('closeModal');
-let selectedLatLng = null;
-
-// Show modal when user clicks on the map
-map.on('click', function(e) {
-    selectedLatLng = e.latlng;  // Store the clicked location
-    modal.style.display = 'flex';  // Show the modal
-});
-
-// Close the modal and add the pin when user selects a pin type
-document.getElementById('normalPin').addEventListener('click', function() {
-    addPin('normal', selectedLatLng);
-    modal.style.display = 'none';  // Hide the modal
-});
-
-document.getElementById('herbPin').addEventListener('click', function() {
-    addPin('herb', selectedLatLng);
-    modal.style.display = 'none';  // Hide the modal
-});
-
-document.getElementById('animalPin').addEventListener('click', function() {
-    addPin('animal', selectedLatLng);
-    modal.style.display = 'none';  // Hide the modal
-});
-
-// Close modal if user clicks the "X" button
-closeModalBtn.addEventListener('click', function() {
-    modal.style.display = 'none';
-});
-
 // Load pins when the page loads
 loadPinsFromServer();
