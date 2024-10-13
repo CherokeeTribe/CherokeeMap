@@ -47,7 +47,7 @@ app.post('/pins', (req, res) => {
     res.status(201).json({ message: 'Pin saved' });
 });
 
-// Set port from environment (Adaptable.io uses this) or fallback to 3000
+// Set port from environment or fallback to 3000
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);

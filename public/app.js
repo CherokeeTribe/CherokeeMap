@@ -1,12 +1,10 @@
-// app.js
-
 // Initialize the map and set view to fit the image
 let map = L.map('map', {
     minZoom: -2,
     maxZoom: 2,
     zoomSnap: 0.1,
     crs: L.CRS.Simple,
-    zoomControl: false // Disable default zoom controls to prevent duplicates
+    zoomControl: false
 });
 
 // Add custom zoom control on the right side
@@ -21,7 +19,7 @@ map.setView([512, 1024], 0); // Center the map with a better zoom level
 // Custom icon images
 const icons = {
     normal: L.icon({
-        iconUrl: 'img/nativepin.png',  // Ensure the correct path to pin images
+        iconUrl: 'img/nativepin.png',
         iconSize: [32, 32],
         iconAnchor: [16, 32]
     }),
@@ -37,21 +35,17 @@ const icons = {
     })
 };
 
-// Function to load all pins from the server
+// Load all pins from the server
 function loadPinsFromServer() {
     fetch('/pins')
         .then(response => response.json())
         .then(pins => {
-            if (!pins || pins.length === 0) {
-                console.error('No pins found');
-                return;
-            }
             pins.forEach(pin => addMarker(pin));
         })
         .catch(err => console.error('Error loading pins:', err));
 }
 
-// Function to save a pin to the server
+// Save a pin to the server
 function savePinToServer(pin) {
     fetch('/pins', {
         method: 'POST',
@@ -94,18 +88,30 @@ function addMarker(pin) {
     marker.pinData = pin;
 }
 
-// Ask for confirmation before removing a pin
+// Confirm pin removal
 function confirmRemovePin(id) {
     if (confirm('Are you sure you want to remove this pin?')) {
         removePin(id);
     }
 }
 
-// Function to remove a pin from the map
+// Remove pin from map and server
 function removePin(id) {
+    let pins = JSON.parse(localStorage.getItem('pins')) || [];
+    pins = pins.filter(pin => pin.id !== id);
+    savePins(pins);
+
     map.eachLayer(layer => {
         if (layer instanceof L.Marker && layer.pinData && layer.pinData.id === id) {
             map.removeLayer(layer);
         }
     });
 }
+
+// Add a click event to the map to add a new pin
+map.on('click', function(e) {
+    let type = prompt('Enter pin type (normal, herb, animal):');
+    if (type && (type === 'normal' || type === 'herb' || type === 'animal')) {
+        addPin(type, e.latlng);
+    }
+});
