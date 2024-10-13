@@ -16,26 +16,26 @@ let bounds = [[0,0], [1024,2048]];
 L.imageOverlay('img/map.jpeg', bounds).addTo(map); // Use the correct path for map image
 map.setView([512, 1024], 0); // Center the map with a better zoom level
 
-// Custom icon images
+// Custom icon images with increased size
 const icons = {
     normal: L.icon({
         iconUrl: 'img/nativepin.png',
-        iconSize: [32, 32],
-        iconAnchor: [16, 32]
+        iconSize: [48, 48],  // Increased size for better visibility
+        iconAnchor: [24, 48]  // Adjust anchor to keep icon aligned
     }),
     herb: L.icon({
         iconUrl: 'img/nativeherbpin.png',
-        iconSize: [32, 32],
-        iconAnchor: [16, 32]
+        iconSize: [48, 48],  // Increased size for better visibility
+        iconAnchor: [24, 48]
     }),
     animal: L.icon({
         iconUrl: 'img/nativeanimalpin.png',
-        iconSize: [32, 32],
-        iconAnchor: [16, 32]
+        iconSize: [48, 48],  // Increased size for better visibility
+        iconAnchor: [24, 48]
     })
 };
 
-// Load all pins from the server (MongoDB)
+// Load all pins from the server
 function loadPinsFromServer() {
     fetch('/pins')
         .then(response => response.json())
@@ -45,7 +45,7 @@ function loadPinsFromServer() {
         .catch(err => console.error('Error loading pins:', err));
 }
 
-// Save a pin to the server (MongoDB)
+// Save a pin to the server
 function savePinToServer(pin) {
     fetch('/pins', {
         method: 'POST',
@@ -64,7 +64,7 @@ function savePinToServer(pin) {
 // Load pins when the page is loaded
 loadPinsFromServer();
 
-// Add a pin with a selected type
+// Add a pin to the map
 function addPin(type, latlng) {
     let title = prompt('Enter pin title:');
     if (!title) return;
@@ -74,7 +74,7 @@ function addPin(type, latlng) {
 
     let pin = { id, lat: latlng.lat, lng: latlng.lng, title, description, type };
 
-    // Save pin to server (MongoDB)
+    // Save pin to server
     savePinToServer(pin);
 
     // Add the new marker to the map
@@ -95,7 +95,7 @@ function confirmRemovePin(id) {
     }
 }
 
-// Remove pin from map
+// Remove pin from map and server (optional server-side deletion)
 function removePin(id) {
     map.eachLayer(layer => {
         if (layer instanceof L.Marker && layer.pinData && layer.pinData.id === id) {
@@ -104,10 +104,28 @@ function removePin(id) {
     });
 }
 
-// Add a click event to the map to add a new pin
+// Modal functionality for selecting pin type
+const modal = document.getElementById('pinModal');
+let selectedLatLng = null;
+
+// Show modal when user clicks on the map
 map.on('click', function(e) {
-    let type = prompt('Enter pin type (normal, herb, animal):');
-    if (type && (type === 'normal' || type === 'herb' || type === 'animal')) {
-        addPin(type, e.latlng);
-    }
+    selectedLatLng = e.latlng;  // Store the clicked location
+    modal.style.display = 'flex';  // Show the modal
+});
+
+// Close the modal and add the pin when user selects a pin type
+document.getElementById('normalPin').addEventListener('click', function() {
+    addPin('normal', selectedLatLng);
+    modal.style.display = 'none';  // Hide the modal
+});
+
+document.getElementById('herbPin').addEventListener('click', function() {
+    addPin('herb', selectedLatLng);
+    modal.style.display = 'none';  // Hide the modal
+});
+
+document.getElementById('animalPin').addEventListener('click', function() {
+    addPin('animal', selectedLatLng);
+    modal.style.display = 'none';  // Hide the modal
 });

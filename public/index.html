@@ -18,11 +18,49 @@
         .leaflet-popup-content {
             text-align: center;
         }
+        /* Modal styling */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .modal-content img {
+            cursor: pointer;
+            width: 70px; /* Increased size */
+            height: 70px; /* Increased size */
+            margin: 0 15px;
+        }
+        .modal-content h3 {
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
 
 <div id="map"></div>
+
+<!-- Modal for pin selection -->
+<div id="pinModal" class="modal">
+    <div class="modal-content">
+        <h3>Select a Pin Type</h3>
+        <img src="img/nativepin.png" id="normalPin" alt="Normal Pin" title="Normal Pin">
+        <img src="img/nativeherbpin.png" id="herbPin" alt="Herb Pin" title="Herb Pin">
+        <img src="img/nativeanimalpin.png" id="animalPin" alt="Animal Pin" title="Animal Pin">
+    </div>
+</div>
 
 <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
 <script src="app.js"></script>
