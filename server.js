@@ -5,7 +5,8 @@ const path = require('path');
 const bodyParser = require('body-parser');
 
 const app = express();
-const uri = 'mongodb+srv://cherokeemap-main-db-0df912b1813:kmqxQApC761D19KWq8Ze6Rn1jCcTJR@prod-us-central1-1.lfuy1.mongodb.net/?retryWrites=true&w=majority';  // Corrected MongoDB URI
+const uri = 'mongodb+srv://cherokeemap-main-db-0df912b1813:kmqxQApC761D19KWq8Ze6Rn1jCcTJR@prod-us-central1-1.lfuy1.mongodb.net/?retryWrites=true&w=majority';  // Correct MongoDB URI
+
 let db;
 
 // Middleware
@@ -50,28 +51,38 @@ app.get('/pins', (req, res) => {
 // API to add a new pin with optional screenshot
 app.post('/pins', upload.single('screenshot'), (req, res) => {
     try {
-        const newPin = JSON.parse(req.body.pin);  // Parse the pin data from the request body
+        // Parse the pin data from the request body
+        const newPin = JSON.parse(req.body.pin);
 
-        if (req.file) {
-            newPin.screenshot = `/uploads/${req.file.filename}`;  // Add the screenshot path to the pin
+        // Check if latitude and longitude are valid
+        if (!newPin.lat || !newPin.lng) {
+            return res.status(400).json({ message: 'Invalid pin data: missing lat/lng' });
         }
 
+        // Add screenshot path if file is uploaded
+        if (req.file) {
+            newPin.screenshot = `/uploads/${req.file.filename}`;
+        }
+
+        // Insert the pin into MongoDB
         db.collection('pins').insertOne(newPin, (err, result) => {
             if (err) {
-                console.error('Error saving pin:', err);
-                return res.status(500).json({ message: 'Error saving pin' });
+                console.error('Error saving pin to MongoDB:', err);  // Log detailed error
+                return res.status(500).json({ message: 'Error saving pin to MongoDB' });
             }
+
+            // Successfully inserted pin
             res.status(201).json({ message: 'Pin saved', id: result.insertedId });
         });
     } catch (error) {
-        console.error('Error processing pin data:', error);
-        res.status(400).json({ message: 'Invalid pin data' });
+        console.error('Error processing pin data:', error);  // Log detailed error
+        res.status(400).json({ message: 'Invalid pin data format' });
     }
 });
 
 // API to delete a pin
 app.delete('/pins/:id', (req, res) => {
-    const pinId = req.params.id;  // Assuming pinId is a string
+    const pinId = req.params.id;  // Assuming pinId is stored as a string, not an integer
     db.collection('pins').deleteOne({ id: pinId }, (err, result) => {
         if (err) {
             console.error('Error deleting pin:', err);

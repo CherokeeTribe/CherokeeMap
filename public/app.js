@@ -195,3 +195,6 @@ document.getElementById('animalPin').addEventListener('click', function() {
 closeModalBtn.addEventListener('click', function() {
     modal.style.display = 'none';
 });
+
+// Load pins when the page loads
+loadPinsFromServer();
