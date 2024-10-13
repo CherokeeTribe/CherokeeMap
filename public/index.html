@@ -22,7 +22,7 @@
         .modal {
             display: none;
             position: fixed;
-            z-index: 9999;
+            z-index: 9999;  /* Ensure this is on top of everything */
             left: 0;
             top: 0;
             width: 100%;
@@ -40,8 +40,8 @@
         }
         .modal-content img {
             cursor: pointer;
-            width: 70px; /* Increased size */
-            height: 70px; /* Increased size */
+            width: 70px;
+            height: 70px;
             margin: 0 15px;
         }
         .modal-content h3 {
@@ -60,6 +60,7 @@
         .fullscreen-modal {
             display: none;
             position: fixed;
+            z-index: 9999;  /* Ensure this is also on top */
             top: 0;
             left: 0;
             width: 100%;

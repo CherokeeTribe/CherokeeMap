@@ -92,17 +92,46 @@ function addPin(type, latlng) {
     };
 }
 
-// Function to add a marker to the map (with optional image thumbnail)
+// Function to add a marker to the map (with optional image thumbnail and delete button)
 function addMarker(pin, thumbnailUrl = null) {
     let popupContent = `<b>${pin.title}</b><br>${pin.description}`;
     
-    if (thumbnailUrl) {
-        popupContent += `<br><img src="${thumbnailUrl}" alt="Screenshot" class="thumbnail" style="width: 50px; height: 50px; cursor: pointer;" onclick="showFullscreenImage('${thumbnailUrl}')">`;
+    if (thumbnailUrl || pin.screenshot) {
+        const imageSrc = thumbnailUrl || pin.screenshot;
+        popupContent += `<br><img src="${imageSrc}" alt="Screenshot" class="thumbnail" style="width: 50px; height: 50px; cursor: pointer;" onclick="showFullscreenImage('${imageSrc}')">`;
     }
+
+    popupContent += `<br><button onclick="confirmRemovePin(${pin.id})">Remove Pin</button>`;
 
     let marker = L.marker([pin.lat, pin.lng], { icon: icons[pin.type] }).addTo(map)
         .bindPopup(popupContent);
     marker.pinData = pin;
+}
+
+// Confirm pin removal
+function confirmRemovePin(id) {
+    if (confirm('Are you sure you want to remove this pin?')) {
+        removePin(id);
+    }
+}
+
+// Remove pin from the map and server
+function removePin(id) {
+    fetch(`/pins/${id}`, {
+        method: 'DELETE'
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log(data.message);
+
+        // Remove pin from map
+        map.eachLayer(layer => {
+            if (layer instanceof L.Marker && layer.pinData && layer.pinData.id === id) {
+                map.removeLayer(layer);
+            }
+        });
+    })
+    .catch(err => console.error('Error deleting pin:', err));
 }
 
 // Function to display full image in a modal
