@@ -1,12 +1,10 @@
-// server.js
-
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const bodyParser = require('body-parser');
 
 const app = express();
-const pinsFolder = path.join(__dirname, 'pins');
+const pinsFolder = path.join(__dirname, 'pins');  // Ensure this points to the correct folder
 
 // Serve static files from the 'public' folder
 app.use(express.static('public'));
@@ -27,10 +25,6 @@ app.get('/pins', (req, res) => {
         }
 
         const allPins = [];
-        if (files.length === 0) {
-            return res.json(allPins); // Return empty array if no pins
-        }
-
         files.forEach(file => {
             const pinData = fs.readFileSync(path.join(pinsFolder, file));
             allPins.push(JSON.parse(pinData));
@@ -49,8 +43,8 @@ app.post('/pins', (req, res) => {
     res.status(201).json({ message: 'Pin saved' });
 });
 
-// Set port from environment (Render uses this) or fallback to 3000
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });
+
