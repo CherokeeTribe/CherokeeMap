@@ -5,7 +5,7 @@ const path = require('path');
 const bodyParser = require('body-parser');
 
 const app = express();
-const uri = 'your_mongodb_connection_string';
+const uri = 'your_mongodb_connection_string'; // Replace with your MongoDB URI
 let db;
 
 // Middleware

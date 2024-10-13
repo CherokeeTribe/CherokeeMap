@@ -142,9 +142,15 @@ function showFullscreenImage(imageUrl) {
     fullscreenModal.style.display = 'flex';
 }
 
-// Close fullscreen modal when X button is clicked
+// Close fullscreen modal when X button or outside the image is clicked
 document.getElementById('closeFullscreenModal').addEventListener('click', function() {
     document.getElementById('fullscreenModal').style.display = 'none';
+});
+
+document.getElementById('fullscreenModal').addEventListener('click', function(e) {
+    if (e.target === document.getElementById('fullscreenModal')) {
+        document.getElementById('fullscreenModal').style.display = 'none';
+    }
 });
 
 // Modal functionality for selecting pin type
