@@ -11,7 +11,7 @@ let map = L.map('map', {
 L.control.zoom({ position: 'topright' }).addTo(map);
 
 // Adjust bounds to match the map image dimensions
-let bounds = [[0,0], [1024,2048]];
+let bounds = [[0, 0], [1024, 2048]];
 
 L.imageOverlay('img/map.jpeg', bounds).addTo(map); // Use the correct path for map image
 map.setView([512, 1024], 0); // Center the map with a better zoom level
@@ -40,7 +40,17 @@ function loadPinsFromServer() {
     fetch('/pins')
         .then(response => response.json())
         .then(pins => {
-            pins.forEach(pin => addMarker(pin));
+            if (Array.isArray(pins)) {
+                pins.forEach(pin => {
+                    if (pin.lat !== undefined && pin.lng !== undefined) {
+                        addMarker(pin); // Only add markers with valid lat/lng
+                    } else {
+                        console.error('Invalid pin data:', pin); // Log invalid pins for debugging
+                    }
+                });
+            } else {
+                console.error('Invalid data received from server:', pins);
+            }
         })
         .catch(err => console.error('Error loading pins:', err));
 }
@@ -63,9 +73,6 @@ function savePinToServer(pin, file) {
     })
     .catch(err => console.error('Error saving pin:', err));
 }
-
-// Load pins when the page is loaded
-loadPinsFromServer();
 
 // Add a pin with a selected type and optional screenshot
 function addPin(type, latlng) {
@@ -103,9 +110,13 @@ function addMarker(pin, thumbnailUrl = null) {
 
     popupContent += `<br><button onclick="confirmRemovePin(${pin.id})">Remove Pin</button>`;
 
-    let marker = L.marker([pin.lat, pin.lng], { icon: icons[pin.type] }).addTo(map)
+    // Ensure valid lat/lng values before adding marker
+    if (pin.lat !== undefined && pin.lng !== undefined) {
+        L.marker([pin.lat, pin.lng], { icon: icons[pin.type] }).addTo(map)
         .bindPopup(popupContent);
-    marker.pinData = pin;
+    } else {
+        console.error('Invalid LatLng for pin:', pin);
+    }
 }
 
 // Confirm pin removal
