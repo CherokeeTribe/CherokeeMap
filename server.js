@@ -5,7 +5,7 @@ const path = require('path');
 const bodyParser = require('body-parser');
 
 const app = express();
-const uri = 'your_mongodb_connection_string'; // Replace with your MongoDB URI
+const uri = 'mongodb+srv://cherokeemap-main-db-0df912b1813:kmqxQApC761D19KWq8Ze6Rn1jCcTJR@prod-us-central1-1.lfuy1.mongodb.net/cherokeemap-main-db-0df912b1813'; // Replace with your MongoDB URI
 let db;
 
 // Middleware
