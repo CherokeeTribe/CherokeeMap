@@ -14,7 +14,7 @@ app.use(express.static('public'));
 // Middleware to parse JSON bodies
 app.use(bodyParser.json());
 
-// Create the pins folder if it doesn't exist
+// Ensure the pins folder exists
 if (!fs.existsSync(pinsFolder)) {
     fs.mkdirSync(pinsFolder);
 }
@@ -45,6 +45,7 @@ app.post('/pins', (req, res) => {
     res.status(201).json({ message: 'Pin saved' });
 });
 
+// Set port from environment (Render uses this) or fallback to 3000
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);

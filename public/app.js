@@ -42,6 +42,10 @@ function loadPinsFromServer() {
     fetch('/pins')
         .then(response => response.json())
         .then(pins => {
+            if (!pins || pins.length === 0) {
+                console.error('No pins found');
+                return;
+            }
             pins.forEach(pin => addMarker(pin));
         })
         .catch(err => console.error('Error loading pins:', err));
