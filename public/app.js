@@ -15,13 +15,13 @@ L.control.zoom({ position: 'topright' }).addTo(map);
 // Adjust bounds to match the map image dimensions
 let bounds = [[0,0], [1024,2048]];
 
-L.imageOverlay('map.jpeg', bounds).addTo(map);
+L.imageOverlay('img/map.jpeg', bounds).addTo(map); // Use the correct path for map image
 map.setView([512, 1024], 0); // Center the map with a better zoom level
 
 // Custom icon images
 const icons = {
     normal: L.icon({
-        iconUrl: 'img/nativepin.png',
+        iconUrl: 'img/nativepin.png',  // Ensure the correct path to pin images
         iconSize: [32, 32],
         iconAnchor: [16, 32]
     }),
@@ -66,44 +66,6 @@ function savePinToServer(pin) {
 // Load pins when the page is loaded
 loadPinsFromServer();
 
-// Handle click event to add a pin
-map.on('click', function (e) {
-    let modal = document.getElementById('pinModal');
-    
-    // Disable map interaction while the modal is shown
-    map.dragging.disable();
-    map.scrollWheelZoom.disable();
-    map.doubleClickZoom.disable();
-    map.touchZoom.disable();
-
-    modal.style.display = 'flex'; // Show the modal for pin selection
-
-    // Event listeners for each pin type selection
-    document.getElementById('normalPin').onclick = function() {
-        modal.style.display = 'none';
-        reEnableMap(); // Re-enable map interaction
-        addPin('normal', e.latlng);
-    };
-    document.getElementById('herbPin').onclick = function() {
-        modal.style.display = 'none';
-        reEnableMap(); // Re-enable map interaction
-        addPin('herb', e.latlng);
-    };
-    document.getElementById('animalPin').onclick = function() {
-        modal.style.display = 'none';
-        reEnableMap(); // Re-enable map interaction
-        addPin('animal', e.latlng);
-    };
-});
-
-// Function to re-enable map interaction
-function reEnableMap() {
-    map.dragging.enable();
-    map.scrollWheelZoom.enable();
-    map.doubleClickZoom.enable();
-    map.touchZoom.enable();
-}
-
 // Add a pin with a selected type
 function addPin(type, latlng) {
     let title = prompt('Enter pin title:');
@@ -125,7 +87,7 @@ function addPin(type, latlng) {
 function addMarker(pin) {
     let marker = L.marker([pin.lat, pin.lng], { icon: icons[pin.type] }).addTo(map)
         .bindPopup(`<b>${pin.title}</b><br>${pin.description}<br><button onclick="confirmRemovePin(${pin.id})">Remove Pin</button>`);
-    marker.pinData = pin; // Attach pin data to the marker
+    marker.pinData = pin;
 }
 
 // Ask for confirmation before removing a pin
@@ -135,12 +97,8 @@ function confirmRemovePin(id) {
     }
 }
 
-// Function to remove a pin
+// Function to remove a pin from the map
 function removePin(id) {
-    pins = pins.filter(pin => pin.id !== id); // Remove pin from the array
-    savePins(pins);
-
-    // Refresh the map markers
     map.eachLayer(layer => {
         if (layer instanceof L.Marker && layer.pinData && layer.pinData.id === id) {
             map.removeLayer(layer);

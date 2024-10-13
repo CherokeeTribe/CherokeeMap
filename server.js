@@ -8,8 +8,10 @@ const bodyParser = require('body-parser');
 const app = express();
 const pinsFolder = path.join(__dirname, 'pins');
 
-// Middleware to serve static files (HTML, JS, images) and parse JSON
-app.use(express.static(__dirname));
+// Serve static files from the 'public' folder
+app.use(express.static('public'));
+
+// Middleware to parse JSON bodies
 app.use(bodyParser.json());
 
 // Create the pins folder if it doesn't exist
@@ -43,7 +45,7 @@ app.post('/pins', (req, res) => {
     res.status(201).json({ message: 'Pin saved' });
 });
 
-const port = 3000;
+const port = process.env.PORT || 3000;
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });
