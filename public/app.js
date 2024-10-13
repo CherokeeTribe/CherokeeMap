@@ -45,14 +45,17 @@ function loadPinsFromServer() {
         .catch(err => console.error('Error loading pins:', err));
 }
 
-// Save a pin to the server
-function savePinToServer(pin) {
+// Save a pin to the server (with optional screenshot)
+function savePinToServer(pin, file) {
+    const formData = new FormData();
+    formData.append('pin', JSON.stringify(pin));
+    if (file) {
+        formData.append('screenshot', file);
+    }
+
     fetch('/pins', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(pin),
+        body: formData,
     })
     .then(response => response.json())
     .then(data => {
@@ -64,45 +67,56 @@ function savePinToServer(pin) {
 // Load pins when the page is loaded
 loadPinsFromServer();
 
-// Add a pin to the map
+// Add a pin with a selected type and optional screenshot
 function addPin(type, latlng) {
     let title = prompt('Enter pin title:');
     if (!title) return;
 
     let description = prompt('Enter pin description:');
-    let id = new Date().getTime(); // Unique ID for the pin
+    let screenshot = document.createElement('input');
+    screenshot.type = 'file';
+    screenshot.accept = 'image/*';
+    screenshot.click();  // Open the file dialog to upload a screenshot
 
-    let pin = { id, lat: latlng.lat, lng: latlng.lng, title, description, type };
+    screenshot.onchange = function() {
+        let file = screenshot.files[0];  // Get the uploaded file
 
-    // Save pin to server
-    savePinToServer(pin);
+        let id = new Date().getTime(); // Unique ID for the pin
+        let pin = { id, lat: latlng.lat, lng: latlng.lng, title, description, type };
 
-    // Add the new marker to the map
-    addMarker(pin);
+        // Save pin with optional screenshot
+        savePinToServer(pin, file);
+
+        // Add the new marker to the map
+        addMarker(pin, URL.createObjectURL(file));  // Create a local URL for the uploaded image
+    };
 }
 
-// Function to add a marker to the map
-function addMarker(pin) {
+// Function to add a marker to the map (with optional image thumbnail)
+function addMarker(pin, thumbnailUrl = null) {
+    let popupContent = `<b>${pin.title}</b><br>${pin.description}`;
+    
+    if (thumbnailUrl) {
+        popupContent += `<br><img src="${thumbnailUrl}" alt="Screenshot" class="thumbnail" style="width: 50px; height: 50px; cursor: pointer;" onclick="showFullscreenImage('${thumbnailUrl}')">`;
+    }
+
     let marker = L.marker([pin.lat, pin.lng], { icon: icons[pin.type] }).addTo(map)
-        .bindPopup(`<b>${pin.title}</b><br>${pin.description}<br><button onclick="confirmRemovePin(${pin.id})">Remove Pin</button>`);
+        .bindPopup(popupContent);
     marker.pinData = pin;
 }
 
-// Confirm pin removal
-function confirmRemovePin(id) {
-    if (confirm('Are you sure you want to remove this pin?')) {
-        removePin(id);
-    }
+// Function to display full image in a modal
+function showFullscreenImage(imageUrl) {
+    const fullscreenModal = document.getElementById('fullscreenModal');
+    const fullscreenImage = document.getElementById('fullscreenImage');
+    fullscreenImage.src = imageUrl;
+    fullscreenModal.style.display = 'flex';
 }
 
-// Remove pin from map and server (optional server-side deletion)
-function removePin(id) {
-    map.eachLayer(layer => {
-        if (layer instanceof L.Marker && layer.pinData && layer.pinData.id === id) {
-            map.removeLayer(layer);
-        }
-    });
-}
+// Close fullscreen modal when X button is clicked
+document.getElementById('closeFullscreenModal').addEventListener('click', function() {
+    document.getElementById('fullscreenModal').style.display = 'none';
+});
 
 // Modal functionality for selecting pin type
 const modal = document.getElementById('pinModal');

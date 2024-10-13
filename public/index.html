@@ -56,6 +56,22 @@
             cursor: pointer;
             font-weight: bold;
         }
+        /* Fullscreen image modal styling */
+        .fullscreen-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            justify-content: center;
+            align-items: center;
+        }
+        .fullscreen-modal img {
+            max-width: 90%;
+            max-height: 90%;
+        }
     </style>
 </head>
 <body>
@@ -71,6 +87,12 @@
         <img src="img/nativeherbpin.png" id="herbPin" alt="Herb Pin" title="Herb Pin">
         <img src="img/nativeanimalpin.png" id="animalPin" alt="Animal Pin" title="Animal Pin">
     </div>
+</div>
+
+<!-- Fullscreen image modal for displaying full image on click -->
+<div id="fullscreenModal" class="fullscreen-modal">
+    <span class="close-btn" id="closeFullscreenModal">&times;</span>
+    <img id="fullscreenImage" src="" alt="Screenshot">
 </div>
 
 <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
